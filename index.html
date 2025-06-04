@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hypometer Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 HYPOMETER DASHBOARD</h1>
+            <p>Système de mesure de hype en temps réel pour les conférences gaming</p>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-indicator">
+                <div class="status-dot" id="connectionStatus"></div>
+                <span id="connectionText">Déconnecté</span>
+            </div>
+            <div class="live-indicator">
+                <div class="live-dot"></div>
+                <span>LIVE TRACKING</span>
+            </div>
+            <div>
+                <span id="messagesCount">0</span> messages analysés
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <h2 class="section-title">🎛️ Panneau de Contrôle</h2>
+                
+                <div class="connection-settings">
+                    <h3>Connexion Twitch</h3>
+                    <button class="btn" onclick="connectToTwitch()" id="twitchConnectBtn">
+                        Se connecter avec Twitch
+                    </button>
+                    <div id="channelInputs" style="display: none;">
+                    </div>
+
+                    <div id="twitchUserInfo" style="display: none; margin-top: 10px;">
+                        <span id="twitchUsernameDisplay"></span>
+                        <button class="btn btn-secondary" onclick="disconnectTwitch()">Déconnexion</button>
+                        <span id="liveStatus" style="margin-left: 10px;"></span>
+                    </div>
+                </div>
+
+                <div class="context-panel">
+                    <div id="activeGameContext" class="context-info" style="display: none;">
+                        <h3>Annonce actuelle</h3>
+                        <p>Jeu en cours : <span id="currentGameName"></span></p>
+                        <button class="btn btn-secondary" onclick="endGameContext()">Terminer l'annonce</button>
+                    </div>
+                    
+                    <div id="pendingGameContext" class="context-info" style="display: none;">
+                        <h3>⏳ Annonce de jeu en cours de capture</h3>
+                        <p>Les messages du chat sont actuellement analysés. Veuillez entrer le nom du jeu pour finaliser l'annonce.</p>
+                        <button class="btn btn-secondary" onclick="cancelNewGame()">Annuler</button>
+                    </div>
+                    
+                    <div id="newGameContext" class="context-actions">
+                        <button class="btn" onclick="startNewGameContext()">Nouvelle annonce de jeu</button>
+                    </div>
+                    
+                    <div id="gameInputForm" style="display: none;">
+                        <div class="input-group">
+                            <label for="gameName">Nom du jeu</label>
+                            <input type="text" id="gameName" placeholder="Ex: The Legend of Zelda">
+                        </div>
+                        <button class="btn" onclick="confirmNewGame()">Confirmer</button>
+                        <button class="btn btn-secondary" onclick="cancelNewGame()">Annuler</button>
+                    </div>
+                </div>
+
+                <div class="keywords-section">
+                    <h3 class="section-title">🔍 Mots-clés de tracking</h3>
+                    
+                    <div class="input-group">
+                        <input type="text" id="newKeyword" placeholder="Nouveau mot-clé">
+                        <div style="margin-top: 30px;">
+                            <label>
+                                <input type="radio" name="keywordType" value="positive" checked> Positif
+                            </label>
+                            <label >
+                                <input type="radio" name="keywordType" value="negative"> Négatif
+                            </label>
+                        </div>
+                        <button class="btn" onclick="addKeyword()" style="margin-top: 10px;">Ajouter</button>
+                    </div>
+
+                    <div class="keyword-list" id="keywordList">
+                        <!-- Les mots-clés seront générés dynamiquement -->
+                    </div>
+                </div>
+
+                <div class="chat-preview">
+                    <h4 style="margin-bottom: 10px;">💬 Aperçu du chat</h4>
+                    <div id="chatMessages">
+                        <!-- Les messages du chat apparaîtront ici -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="leaderboard">
+                <h2 class="section-title">🏆 Classement Hypometer</h2>
+                
+                <div id="gamesList">
+                    <!-- Le classement sera généré dynamiquement -->
+                </div>
+
+                <div style="margin-top: 20px; text-align: center;">
+                    
+                    <button class="btn" onclick="resetData()" style="margin-left: 10px;">🗑️ Réinitialiser</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="tmi.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
