@@ -30,6 +30,26 @@ function saveState() {
   Storage.set("appState", state);
 }
 
+// Calcul du score d'un jeu
+function calculateGameScore(game) {
+  if (!game) return;
+
+  const positive = game.positiveReactions || 0;
+  const negative = game.negativeReactions || 0;
+  const neutral = game.neutralReactions || 0;
+  const total = positive + negative + neutral;
+
+  if (total === 0) {
+    game.score = 0;
+    return;
+  }
+
+  // Score basé sur la différence positive/négative, pondéré par le total
+  const difference = positive - negative;
+  const ratio = total > 0 ? difference / total : 0;
+  game.score = Math.round(ratio * 100);
+}
+
 // Connexion Twitch
 function connectToTwitch() {
   const authUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${TWITCH_CLIENT_ID}&redirect_uri=${TWITCH_REDIRECT_URI}&response_type=token&scope=chat:read`;
@@ -442,6 +462,24 @@ function resetData() {
   }
 }
 
+// Gestion manuelle du hype (+1/-1)
+function manualHype(gameId, value) {
+  const game = state.games.find((g) => g.id === gameId);
+  if (!game) return;
+
+  if (value === 1) {
+    game.positiveReactions++;
+  } else if (value === -1) {
+    game.negativeReactions++;
+  }
+
+  game.totalMessages = (game.totalMessages || 0) + 1;
+  calculateGameScore(game);
+  saveState();
+  updateLeaderboard();
+  updateUI();
+}
+
 // Mise à jour du leaderboard
 function updateLeaderboard() {
   if (!state.games || state.games.length === 0) return;
@@ -480,30 +518,16 @@ function updateLeaderboard() {
                     <strong>Différence : ${diff}</strong>
                 </div>
                 <div class="manual-hype-controls" style="margin-top:8px;">
-                    <button class="btn-hype" data-gameid="${
+                    <button class="btn-hype" onclick="manualHype('${
                       game.id
-                    }" data-type="plus">+1</button>
-                    <button class="btn-dehype" data-gameid="${
+                    }', 1)">+1</button>
+                    <button class="btn-dehype" onclick="manualHype('${
                       game.id
-                    }" data-type="minus">-1</button>
+                    }', -1)">-1</button>
                 </div>
             </div>
         `;
     gamesList.appendChild(gameDiv);
-  });
-
-  // Ajoute les listeners pour les boutons +1 et -1
-  document.querySelectorAll(".btn-hype").forEach((btn) => {
-    btn.onclick = function () {
-      const gameId = this.getAttribute("data-gameid");
-      manualHype(gameId, 1);
-    };
-  });
-  document.querySelectorAll(".btn-dehype").forEach((btn) => {
-    btn.onclick = function () {
-      const gameId = this.getAttribute("data-gameid");
-      manualHype(gameId, -1);
-    };
   });
 }
 
@@ -671,17 +695,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 3000);
 });
-
-function manualHype(gameId, value) {
-  const game = state.games.find((g) => g.id === gameId);
-  if (!game) return;
-  if (value === 1) {
-    game.positiveReactions++;
-  } else if (value === -1) {
-    game.negativeReactions++;
-  }
-  game.totalMessages = (game.totalMessages || 0) + 1;
-  calculateGameScore(game);
-  saveState();
-  updateLeaderboard();
-}
