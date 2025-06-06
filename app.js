@@ -271,43 +271,41 @@ function removeGame(gameId) {
   }
 }
 
-window.twitchClient = client;
-
 // Simulation de messages de chat (pour test)
-function simulateChatMessage() {
-  if (window.twitchClient) return; // Ne pas simuler si connecté à Twitch
-  if (!state.activeGame) return;
+// function simulateChatMessage() {
+//   if (window.twitchClient) return; // Ne pas simuler si connecté à Twitch
+//   if (!state.activeGame) return;
 
-  const viewers = [
-    "Viewer123",
-    "Gamer456",
-    "HypeGamer",
-    "StreamFan",
-    "GameLover",
-  ];
-  const positiveMessages = [
-    "Ce jeu a l'air incroyable !",
-    "HYPE HYPE HYPE !!!",
-    "Génial, j'ai hâte !",
-    "Ça va être fou !",
-    "Meilleur jeu de l'année !",
-  ];
-  const negativeMessages = [
-    "Bof, ça a l'air nul...",
-    "Pas convaincu du tout",
-    "Décevant comme d'hab",
-    "Encore un truc commercial",
-    "Ça va être chiant",
-  ];
+//   const viewers = [
+//     "Viewer123",
+//     "Gamer456",
+//     "HypeGamer",
+//     "StreamFan",
+//     "GameLover",
+//   ];
+//   const positiveMessages = [
+//     "Ce jeu a l'air incroyable !",
+//     "HYPE HYPE HYPE !!!",
+//     "Génial, j'ai hâte !",
+//     "Ça va être fou !",
+//     "Meilleur jeu de l'année !",
+//   ];
+//   const negativeMessages = [
+//     "Bof, ça a l'air nul...",
+//     "Pas convaincu du tout",
+//     "Décevant comme d'hab",
+//     "Encore un truc commercial",
+//     "Ça va être chiant",
+//   ];
 
-  const isPositive = Math.random() > 0.3;
-  const viewer = viewers[Math.floor(Math.random() * viewers.length)];
-  const message = isPositive
-    ? positiveMessages[Math.floor(Math.random() * positiveMessages.length)]
-    : negativeMessages[Math.floor(Math.random() * negativeMessages.length)];
+//   const isPositive = Math.random() > 0.3;
+//   const viewer = viewers[Math.floor(Math.random() * viewers.length)];
+//   const message = isPositive
+//     ? positiveMessages[Math.floor(Math.random() * positiveMessages.length)]
+//     : negativeMessages[Math.floor(Math.random() * negativeMessages.length)];
 
-  handleChatMessage("simulation", viewer, message);
-}
+//   handleChatMessage("simulation", viewer, message);
+// }
 
 // Analyse de message
 function analyzeMessage(message) {
