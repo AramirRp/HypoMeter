@@ -36,13 +36,17 @@
                     <button class="btn" onclick="connectToTwitch()" id="twitchConnectBtn">
                         Se connecter avec Twitch
                     </button>
-                    <div id="channelInputs" style="display: none;">
-                    </div>
-
+                    
                     <div id="twitchUserInfo" style="display: none; margin-top: 10px;">
                         <span id="twitchUsernameDisplay"></span>
                         <button class="btn btn-secondary" onclick="disconnectTwitch()">Déconnexion</button>
                         <span id="liveStatus" style="margin-left: 10px;"></span>
+                    </div>
+
+                    <div id="channelInputs" style="display: none; margin-top: 15px;">
+                        <div class="input-group">
+               
+                        </div>
                     </div>
                 </div>
 
@@ -78,11 +82,11 @@
                     
                     <div class="input-group">
                         <input type="text" id="newKeyword" placeholder="Nouveau mot-clé">
-                        <div style="margin-top: 30px;">
+                        <div style="margin-top: 15px;">
                             <label>
                                 <input type="radio" name="keywordType" value="positive" checked> Positif
                             </label>
-                            <label >
+                            <label>
                                 <input type="radio" name="keywordType" value="negative"> Négatif
                             </label>
                         </div>
@@ -109,14 +113,15 @@
                     <!-- Le classement sera généré dynamiquement -->
                 </div>
 
-                <div style="margin-top: 20px; text-align: center;">
-                    
-                    <button class="btn" onclick="resetData()" style="margin-left: 10px;">🗑️ Réinitialiser</button>
+                <div class="data-management" style="margin-top: 20px; text-align: center;">
+                    <button class="btn" onclick="exportData()">📥 Exporter données</button>
+                    <button class="btn" onclick="importData()">📤 Importer données</button>
+                    <button class="btn btn-secondary" onclick="resetData()">🗑️ Réinitialiser</button>
                 </div>
             </div>
         </div>
     </div>
-    <script src="tmi.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tmi.js@1.8.5/dist/tmi.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
