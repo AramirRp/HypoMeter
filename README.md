@@ -1,4 +1,4 @@
-# 🎮 HypoLegacy - Hypometer Dashboard
+# 🎮 HypoMeter - Hypometer Dashboard
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
@@ -6,7 +6,7 @@
 
 > **Système de mesure de hype en temps réel pour les conférences gaming et streams Twitch**
 
-HypoLegacy est un dashboard interactif qui analyse en temps réel les réactions du chat Twitch pour mesurer le niveau de "hype" lors d'annonces de jeux vidéo. Parfait pour les streamers, organisateurs d'événements gaming et analystes de communauté.
+HypoMeter est un dashboard interactif qui analyse en temps réel les réactions du chat Twitch pour mesurer le niveau de "hype" lors d'annonces de jeux vidéo. Parfait pour les streamers, organisateurs d'événements gaming et analystes de communauté.
 
 ## ✨ Fonctionnalités
 
@@ -52,10 +52,10 @@ HypoLegacy est un dashboard interactif qui analyse en temps réel les réactions
 
 ```bash
 # Cloner le repository
-git clone https://github.com/votre-username/hypolegacy.git
+git clone https://github.com/votre-username/HypoMeter.git
 
 # Aller dans le dossier
-cd hypolegacy
+cd HypoMeter
 
 # Lancer un serveur local (optionnel)
 python -m http.server 8000
@@ -107,7 +107,7 @@ npx http-server
 ## 📊 Architecture
 
 ```
-HypoLegacy/
+HypoMeter/
 ├── index.html          # Interface principale
 ├── app.js             # Logique principale et gestion d'état
 ├── styles.css         # Styles et animations
