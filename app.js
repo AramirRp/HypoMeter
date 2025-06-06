@@ -123,6 +123,8 @@ function handleTwitchCallback() {
       fetchTwitchUsername(accessToken[1]).then((username) => {
         if (username) {
           Storage.set("twitchUsername", username);
+          // LOAD STATE BEFORE initializing Twitch client
+          loadInitialState(); // Add this line
           initTwitchClient();
           updateTwitchUI();
         } else {
@@ -262,6 +264,7 @@ function removeGame(gameId) {
       }
 
       saveState();
+      updateLeaderboard(); // Add this line BEFORE updateUI()
       updateUI();
       console.log(`Jeu avec l'ID ${gameId} supprimé`);
     }
@@ -690,7 +693,14 @@ function updateUI() {
 function loadInitialState() {
   const savedState = Storage.get("appState");
   if (savedState) {
-    state = { ...state, ...savedState };
+    // MERGE state instead of replacing completely
+    state = {
+      ...state,
+      ...savedState,
+      // Preserve connection state
+      connectedChannels:
+        savedState.connectedChannels || state.connectedChannels,
+    };
     // Ne pas réactiver un contexte en attente au rechargement
     if (state.activeGame && state.activeGame.isPending) {
       state.activeGame = null;
