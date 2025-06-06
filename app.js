@@ -246,6 +246,28 @@ function endGameContext() {
   }
 }
 
+// NOUVELLE FONCTION : Supprimer un jeu
+function removeGame(gameId) {
+  if (confirm("Êtes-vous sûr de vouloir supprimer ce jeu du classement ?")) {
+    // Trouver l'index du jeu
+    const gameIndex = state.games.findIndex((game) => game.id === gameId);
+
+    if (gameIndex > -1) {
+      // Retirer le jeu de la liste
+      state.games.splice(gameIndex, 1);
+
+      // Si c'est le jeu actif, le désactiver
+      if (state.activeGame && state.activeGame.id === gameId) {
+        state.activeGame = null;
+      }
+
+      saveState();
+      updateUI();
+      console.log(`Jeu avec l'ID ${gameId} supprimé`);
+    }
+  }
+}
+
 // Simulation de messages de chat (pour test)
 function simulateChatMessage() {
   if (window.twitchClient) return; // Ne pas simuler si connecté à Twitch
@@ -352,7 +374,7 @@ function handleChatMessage(channel, username, message) {
   saveState();
 }
 
-// Mise à jour des stats d'un jeu
+// Mise à jour des stats d'un jeu - CORRECTION DU BUG
 function updateGameStats(gameId, sentiment) {
   let game;
 
@@ -365,14 +387,15 @@ function updateGameStats(gameId, sentiment) {
 
   if (!game) return;
 
+  // CORRECTION : Incrémenter totalMessages avant de traiter le sentiment
   game.totalMessages = (game.totalMessages || 0) + 1;
 
   switch (sentiment) {
     case "positive":
-      game.positiveReactions++;
+      game.positiveReactions = (game.positiveReactions || 0) + 1;
       break;
     case "negative":
-      game.negativeReactions++;
+      game.negativeReactions = (game.negativeReactions || 0) + 1;
       break;
     case "neutral":
       game.neutralReactions = (game.neutralReactions || 0) + 1;
@@ -426,21 +449,106 @@ function removeKeyword(button) {
   }
 }
 
-// Export des données
+// NOUVELLE FONCTION : Import des données
+function importData() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json";
+
+  input.onchange = function (e) {
+    const file = e.target?.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      try {
+        const importedData = JSON.parse(event.target?.result);
+
+        // Validation basique des données
+        if (!importedData.games || !importedData.keywords) {
+          alert("Fichier invalide : structure de données incorrecte");
+          return;
+        }
+
+        // Demander confirmation
+        const confirmImport = confirm(
+          `Voulez-vous importer ces données ?\n` +
+            `- ${importedData.games?.length || 0} jeux\n` +
+            `- ${
+              (importedData.keywords?.positive?.length || 0) +
+              (importedData.keywords?.negative?.length || 0)
+            } mots-clés\n` +
+            `- ${importedData.totalMessages || 0} messages analysés\n\n` +
+            `Cela remplacera vos données actuelles.`
+        );
+
+        if (confirmImport) {
+          // Fusionner les données importées avec l'état actuel
+          state.games = [...(state.games || []), ...(importedData.games || [])];
+
+          // Pour les mots-clés, on les ajoute s'ils n'existent pas déjà
+          if (importedData.keywords?.positive) {
+            importedData.keywords.positive.forEach((keyword) => {
+              if (!state.keywords.positive.includes(keyword)) {
+                state.keywords.positive.push(keyword);
+              }
+            });
+          }
+
+          if (importedData.keywords?.negative) {
+            importedData.keywords.negative.forEach((keyword) => {
+              if (!state.keywords.negative.includes(keyword)) {
+                state.keywords.negative.push(keyword);
+              }
+            });
+          }
+
+          // Mettre à jour le compteur de messages si nécessaire
+          if (
+            importedData.totalMessages &&
+            importedData.totalMessages > state.messageCount
+          ) {
+            state.messageCount = importedData.totalMessages;
+          }
+
+          saveState();
+          updateUI();
+          alert("Données importées avec succès !");
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'import:", error);
+        alert(
+          "Erreur lors de l'import du fichier. Vérifiez que le fichier est valide."
+        );
+      }
+    };
+
+    reader.readAsText(file);
+  };
+
+  input.click();
+}
+
+// Export des données - AMÉLIORÉ
 function exportData() {
   const data = {
     games: state.games,
     keywords: state.keywords,
     totalMessages: state.messageCount,
     timestamp: new Date().toISOString(),
+    version: "1.0", // Pour la compatibilité future
   };
+
   const dataStr = JSON.stringify(data, null, 2);
   const dataBlob = new Blob([dataStr], { type: "application/json" });
   const url = URL.createObjectURL(dataBlob);
   const link = document.createElement("a");
   link.href = url;
   link.download = `hypometer_${new Date().toISOString().split("T")[0]}.json`;
+  document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 // Réinitialisation des données
@@ -468,9 +576,9 @@ function manualHype(gameId, value) {
   if (!game) return;
 
   if (value === 1) {
-    game.positiveReactions++;
+    game.positiveReactions = (game.positiveReactions || 0) + 1;
   } else if (value === -1) {
-    game.negativeReactions++;
+    game.negativeReactions = (game.negativeReactions || 0) + 1;
   }
 
   game.totalMessages = (game.totalMessages || 0) + 1;
@@ -480,7 +588,7 @@ function manualHype(gameId, value) {
   updateUI();
 }
 
-// Mise à jour du leaderboard
+// Mise à jour du leaderboard - AVEC BOUTON SUPPRIMER
 function updateLeaderboard() {
   if (!state.games || state.games.length === 0) return;
 
@@ -512,9 +620,9 @@ function updateLeaderboard() {
             <div class="game-info">
                 <div class="game-name">${game.name || "Jeu en cours..."}</div>
                 <div class="game-stats">
-                    ${game.positiveReactions} positives • 
-                    ${game.negativeReactions} négatives • 
-                    ${game.totalMessages} messages<br>
+                    ${game.positiveReactions || 0} positives • 
+                    ${game.negativeReactions || 0} négatives • 
+                    ${game.totalMessages || 0} messages<br>
                     <strong>Différence : ${diff}</strong>
                 </div>
                 <div class="manual-hype-controls" style="margin-top:8px;">
@@ -524,6 +632,9 @@ function updateLeaderboard() {
                     <button class="btn-dehype" onclick="manualHype('${
                       game.id
                     }', -1)">-1</button>
+                    <button class="btn-remove" onclick="removeGame('${
+                      game.id
+                    }')" style="background-color: #dc3545; margin-left: 5px;">🗑️</button>
                 </div>
             </div>
         `;
@@ -553,8 +664,6 @@ function updateUI() {
     keywordTag.innerHTML = `${keyword} <button class="remove-keyword" onclick="removeKeyword(this)">×</button>`;
     keywordList.appendChild(keywordTag);
   });
-
-  // NE TOUCHE PAS À #chatMessages ICI !
 
   // Contexte de jeu
   if (state.activeGame && !state.activeGame.isPending) {
