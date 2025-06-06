@@ -11,9 +11,7 @@ let state = {
   connectedChannels: [],
 };
 
-// Configuration Twitch
-const TWITCH_CLIENT_ID = "n9t2mmltmqnmyhfugrh5ci62ad6rzy";
-const TWITCH_REDIRECT_URI = "https://hypolegacy.vercel.app";
+window.CONFIG = CONFIG;
 
 // Gestionnaire de localStorage
 const Storage = {
