@@ -77,7 +77,6 @@ async function initTwitchClient() {
   try {
     if (window.twitchClient && window.twitchClient.disconnect) {
       await window.twitchClient.disconnect();
-      console.log("Ancien client déconnecté");
     }
   } catch (e) {
     console.error("Erreur lors de la déconnexion :", e);
@@ -94,12 +93,10 @@ async function initTwitchClient() {
 
   client.on("message", (channel, tags, message, self) => {
     if (self) return;
-    console.log("Message reçu :", message, "par", tags["display-name"]);
     handleChatMessage(channel, tags["display-name"] || tags.username, message);
   });
 
   client.on("connected", (addr, port) => {
-    console.log("Connecté au(x) channel(s) :", channels);
     document.getElementById("connectionStatus").classList.add("connected");
     document.getElementById("connectionText").textContent = "Connecté à Twitch";
     state.connectedChannels = channels;
@@ -107,7 +104,6 @@ async function initTwitchClient() {
   });
 
   client.on("disconnected", (reason) => {
-    console.log("Déconnecté de Twitch:", reason);
     document.getElementById("connectionStatus").classList.remove("connected");
     document.getElementById("connectionText").textContent = "Déconnecté";
   });
@@ -115,9 +111,7 @@ async function initTwitchClient() {
   try {
     await client.connect();
     window.twitchClient = client;
-    console.log("Client connecté et stocké sur window");
   } catch (error) {
-    console.error("Erreur de connexion Twitch:", error);
     document.getElementById("connectionText").textContent =
       "Erreur de connexion";
   }
@@ -281,42 +275,6 @@ function removeGame(gameId) {
     }
   }
 }
-
-// Simulation de messages de chat (pour test)
-// function simulateChatMessage() {
-//   if (window.twitchClient) return; // Ne pas simuler si connecté à Twitch
-//   if (!state.activeGame) return;
-
-//   const viewers = [
-//     "Viewer123",
-//     "Gamer456",
-//     "HypeGamer",
-//     "StreamFan",
-//     "GameLover",
-//   ];
-//   const positiveMessages = [
-//     "Ce jeu a l'air incroyable !",
-//     "HYPE HYPE HYPE !!!",
-//     "Génial, j'ai hâte !",
-//     "Ça va être fou !",
-//     "Meilleur jeu de l'année !",
-//   ];
-//   const negativeMessages = [
-//     "Bof, ça a l'air nul...",
-//     "Pas convaincu du tout",
-//     "Décevant comme d'hab",
-//     "Encore un truc commercial",
-//     "Ça va être chiant",
-//   ];
-
-//   const isPositive = Math.random() > 0.3;
-//   const viewer = viewers[Math.floor(Math.random() * viewers.length)];
-//   const message = isPositive
-//     ? positiveMessages[Math.floor(Math.random() * positiveMessages.length)]
-//     : negativeMessages[Math.floor(Math.random() * negativeMessages.length)];
-
-//   handleChatMessage("simulation", viewer, message);
-// }
 
 // Analyse de message
 function analyzeMessage(message) {
@@ -819,9 +777,4 @@ document.addEventListener("DOMContentLoaded", () => {
   updateTwitchUI();
 
   // Simuler des messages seulement si pas connecté à Twitch
-  setInterval(() => {
-    if (!window.twitchClient) {
-      simulateChatMessage();
-    }
-  }, 3000);
 });
