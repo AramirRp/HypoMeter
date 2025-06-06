@@ -12,6 +12,8 @@ let state = {
 };
 
 window.CONFIG = CONFIG;
+const TWITCH_CLIENT_ID = CONFIG.TWITCH_CLIENT_ID;
+const TWITCH_REDIRECT_URI = CONFIG.TWITCH_REDIRECT_URI;
 
 // Gestionnaire de localStorage
 const Storage = {
