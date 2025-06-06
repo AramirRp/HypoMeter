@@ -74,7 +74,7 @@ async function initTwitchClient() {
   }
 
   const client = new tmi.Client({
-    options: { debug: false },
+    options: { debug: true },
     identity: {
       username: username,
       password: `oauth:${accessToken}`,
