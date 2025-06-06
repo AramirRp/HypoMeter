@@ -271,6 +271,8 @@ function removeGame(gameId) {
   }
 }
 
+window.twitchClient = client;
+
 // Simulation de messages de chat (pour test)
 function simulateChatMessage() {
   if (window.twitchClient) return; // Ne pas simuler si connecté à Twitch
