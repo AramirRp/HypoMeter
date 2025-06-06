@@ -60,17 +60,27 @@ function connectToTwitch() {
 async function initTwitchClient() {
   const accessToken = Storage.get("twitchToken");
   const username = Storage.get("twitchUsername");
-  if (!accessToken || !username) return;
+  console.log("Token:", accessToken, "Username:", username);
+  if (!accessToken || !username) {
+    console.warn("Token ou username manquant");
+    return;
+  }
 
   let channels = Storage.get("connectedChannels") || [];
   if (channels.length === 0) {
     channels = [username.toLowerCase()];
     Storage.set("connectedChannels", channels);
   }
+  console.log("Channels:", channels);
 
   // Déconnecte l'ancien client si besoin
-  if (window.twitchClient && window.twitchClient.disconnect) {
-    await window.twitchClient.disconnect();
+  try {
+    if (window.twitchClient && window.twitchClient.disconnect) {
+      await window.twitchClient.disconnect();
+      console.log("Ancien client déconnecté");
+    }
+  } catch (e) {
+    console.error("Erreur lors de la déconnexion :", e);
   }
 
   const client = new tmi.Client({
@@ -84,6 +94,7 @@ async function initTwitchClient() {
 
   client.on("message", (channel, tags, message, self) => {
     if (self) return;
+    console.log("Message reçu :", message, "par", tags["display-name"]);
     handleChatMessage(channel, tags["display-name"] || tags.username, message);
   });
 
@@ -104,13 +115,13 @@ async function initTwitchClient() {
   try {
     await client.connect();
     window.twitchClient = client;
+    console.log("Client connecté et stocké sur window");
   } catch (error) {
     console.error("Erreur de connexion Twitch:", error);
     document.getElementById("connectionText").textContent =
       "Erreur de connexion";
   }
 }
-
 // Callback OAuth Twitch
 function handleTwitchCallback() {
   const hash = window.location.hash;
